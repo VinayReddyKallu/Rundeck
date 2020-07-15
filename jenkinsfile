@@ -1,0 +1,18 @@
+pipeline{
+    agent any
+    stages{
+        stage('clean'){
+            steps{
+                powershell(script:"Remove-Item *.zip") 
+            }
+        }
+        stage('build-deploy'){
+            steps{
+                bat "powershell.exe Compress-Archive Policies/*.rb ApachePolicy-7.20.${BUILD_NUMBER}.zip"
+                bat "jfrog rt c rt-server-1 --url=http://localhost:8082/artifactory --user=admin --password=vinay123"
+                bat "jfrog rt u *.zip Policies"
+                
+            }
+        }
+    }
+}
